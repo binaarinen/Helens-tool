@@ -1,4 +1,4 @@
-#!/venv/bin/python
+#!/usr/bin/python
 #
 # Exampleapplication Helen
 # version 0
@@ -8,8 +8,6 @@
 import os.path
 import tkinter as tk
 import tkinter.messagebox as msg
-from docx import Document
-
 
 # global variable - defines where text-files are stored
 filepath='texts/'
@@ -36,11 +34,9 @@ class DocumentCreator(tk.Tk):
             option.pack()
 
         # generation Button
-        self.generateButton = tk.Button(self, text="generate document", command=self.generateWord)
+        self.generateButton = tk.Button(self, text="generate document", command=self.generate)
         self.generateButton.pack()
 
-        self.exitButton = tk.Button(self, text="exit", command=self.exitApp)
-        self.exitButton.pack()
 
     # if text-part is de-/selected it is added/removed
     def add_option(self, event):
@@ -50,27 +46,13 @@ class DocumentCreator(tk.Tk):
         else:
             self.choosenOptions.append(task)
 
-
-    def exitApp(self):
-        exit()
-#    # generation of combined textfile
-#    def generate(self):
-#        print('generating file...')
-#        self.generateWord()
-#        with open('final.txt', 'w') as f:
-#            for op in self.choosenOptions:
-#                with open(filepath + op + '.txt', 'r') as r:
-#                    f.write(r.read()) 
-
-    # generation of combined file as word
-    def generateWord(self):
-        document = Document()
-        document.add_heading('Example Document template')
-        for op in self.choosenOptions:
-            with open(filepath + op + '.txt', 'r') as r:
-                p = document.add_paragraph('')
-                p.add_run(r.read())
-        document.save('final.docx')    
+    # generation of combined textfile
+    def generate(self):
+        print('generating file...')
+        with open('final.txt', 'w') as f:
+            for op in self.choosenOptions:
+                with open(filepath + op + '.txt', 'r') as r:
+                    f.write(r.read()) 
 
 
 # get all text-blocks in specified directory

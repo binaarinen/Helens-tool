@@ -1,27 +1,31 @@
-#!/venv/bin/python
-#
-# Exampleapplication Helen
-# version 0
-# (c) 2021 T.Wisotzki
-#
+#!/bin/env python3
 
-import os.path
+"""
+Exampleapplication Helen
+version 0
+(c) 2021 T.Wisotzki
+"""
+
+import sys
+import os
 import tkinter as tk
-import tkinter.messagebox as msg
-from docx import Document
+import subprocess
 
 
 # global variable - defines where text-files are stored
-filepath='texts/'
+TEXTS_PATH = "texts/"
+
 
 class DocumentCreator(tk.Tk):
+    """Main GUI"""
+
     def __init__(self, optionnames):
         super().__init__()
         self.title("Document creator")
         self.geometry("300x400")
 
         self.options = []
-        self.choosenOptions = []
+        self.choosen_options = []
 
         # instructions at top
         label = tk.Label(self, text="Select textblocks to include:")
@@ -29,60 +33,77 @@ class DocumentCreator(tk.Tk):
 
         # create checkboxes for every file
         for opname in optionnames:
-            newOption = tk.Checkbutton(self, text=opname)
-            newOption.bind("<Button-1>", self.add_option)
-            self.options.append(newOption)
+            new_option = tk.Checkbutton(self, text=opname)
+            new_option.bind("<Button-1>", self.add_option)
+            self.options.append(new_option)
         for option in self.options:
             option.pack()
 
         # generation Button
-        self.generateButton = tk.Button(self, text="generate document", command=self.generateWord)
-        self.generateButton.pack()
+        self.generate_button = tk.Button(
+            self, text="generate document", command=self.generate_word
+        )
+        self.generate_button.pack()
 
-        self.exitButton = tk.Button(self, text="exit", command=self.exitApp)
-        self.exitButton.pack()
+        self.exit_button = tk.Button(self, text="exit", command=self.exit_app)
+        self.exit_button.pack()
 
-    # if text-part is de-/selected it is added/removed
     def add_option(self, event):
+        """if text-part is de-/selected it is added/removed"""
         task = event.widget.cget("text")
-        if task in self.choosenOptions:
-            self.choosenOptions.remove(task)
+        if task in self.choosen_options:
+            self.choosen_options.remove(task)
         else:
-            self.choosenOptions.append(task)
+            self.choosen_options.append(task)
+
+    @staticmethod
+    def exit_app():
+        """Exit"""
+        sys.exit(0)
+
+    def generate_word(self):
+        """generation of combined file as word"""
+        header = """---
+title: Example Document template
+---
+        """
+        doc = header
+        for option in self.choosen_options:
+            with open(
+                os.path.join(TEXTS_PATH, option + ".txt"), encoding="utf-8"
+            ) as stream:
+                doc += "\n" + stream.read()
+        template_args = (
+            ("--reference-doc=template.docx",)
+            if os.path.exists("template.docx")
+            else ()
+        )
+        executable = "pandoc"
+
+        if os.name == "nt":
+            executable += ".exe"
+        subprocess.run(
+            (
+                executable,
+                "-o",
+                "final.docx",
+                "--from=markdown",
+                "-",
+            )
+            + template_args,
+            input=doc.encode(),
+            check=True,
+        )
 
 
-    def exitApp(self):
-        exit()
-#    # generation of combined textfile
-#    def generate(self):
-#        print('generating file...')
-#        self.generateWord()
-#        with open('final.txt', 'w') as f:
-#            for op in self.choosenOptions:
-#                with open(filepath + op + '.txt', 'r') as r:
-#                    f.write(r.read()) 
-
-    # generation of combined file as word
-    def generateWord(self):
-        document = Document()
-        document.add_heading('Example Document template')
-        for op in self.choosenOptions:
-            with open(filepath + op + '.txt', 'r') as r:
-                p = document.add_paragraph('')
-                p.add_run(r.read())
-        document.save('final.docx')    
+def get_options():
+    """get all text-blocks in specified directory"""
+    if not os.path.isdir(TEXTS_PATH):
+        print("Error: path to text extracts not valid", file=sys.stderr)
+        sys.exit(1)
+    return [os.path.splitext(path)[0] for path in os.listdir(TEXTS_PATH)]
 
 
-# get all text-blocks in specified directory
-def getOptions():
-    if not os.path.isdir(filepath):
-        print("Error: path to text extracts not valid")
-        exit()
-    options = list()
-    for option in os.listdir(filepath):
-        options.append(option.split('.')[0])
-    return options
-        
-if __name__=="__main__":
-    documentcreator = DocumentCreator(getOptions())
+if __name__ == "__main__":
+    documentcreator = DocumentCreator(get_options())
     documentcreator.mainloop()

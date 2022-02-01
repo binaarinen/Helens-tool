@@ -2,4 +2,8 @@
 *.txt
 
 # outputfile
-final.txt
+/final.txt
+/final.docx
+
+# template file
+/template.docx

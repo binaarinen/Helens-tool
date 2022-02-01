@@ -61,15 +61,6 @@ class DocumentCreator(tk.Tk):
         """Exit"""
         sys.exit(0)
 
-    #    # generation of combined textfile
-    #    def generate(self):
-    #        print('generating file...')
-    #        self.generateWord()
-    #        with open('final.txt', 'w') as f:
-    #            for op in self.choosenOptions:
-    #                with open(filepath + op + '.txt', 'r') as r:
-    #                    f.write(r.read())
-
     def generate_word(self):
         """generation of combined file as word"""
         document = Document()

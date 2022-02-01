@@ -66,7 +66,9 @@ class DocumentCreator(tk.Tk):
         document = Document()
         document.add_heading("Example Document template")
         for option in self.choosen_options:
-            with open(TEXTS_PATH + option + ".txt", encoding="utf-8") as stream:
+            with open(
+                os.path.join(TEXTS_PATH, option + ".txt"), encoding="utf-8"
+            ) as stream:
                 paragraph = document.add_paragraph("")
                 paragraph.add_run(stream.read())
         document.save("final.docx")
@@ -77,7 +79,7 @@ def get_options():
     if not os.path.isdir(TEXTS_PATH):
         print("Error: path to text extracts not valid", file=sys.stderr)
         sys.exit(1)
-    return [option.split(".")[0] for option in os.listdir(TEXTS_PATH)]
+    return [os.path.splitext(path)[0] for path in os.listdir(TEXTS_PATH)]
 
 
 if __name__ == "__main__":

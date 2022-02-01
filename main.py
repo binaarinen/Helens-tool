@@ -1,4 +1,4 @@
-#!/venv/bin/python
+#!/bin/env python3
 
 """
 Exampleapplication Helen

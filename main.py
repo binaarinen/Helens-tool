@@ -12,7 +12,8 @@ from docx import Document
 
 
 # global variable - defines where text-files are stored
-filepath='texts/'
+filepath = "texts/"
+
 
 class DocumentCreator(tk.Tk):
     def __init__(self, optionnames):
@@ -36,7 +37,9 @@ class DocumentCreator(tk.Tk):
             option.pack()
 
         # generation Button
-        self.generateButton = tk.Button(self, text="generate document", command=self.generateWord)
+        self.generateButton = tk.Button(
+            self, text="generate document", command=self.generateWord
+        )
         self.generateButton.pack()
 
         self.exitButton = tk.Button(self, text="exit", command=self.exitApp)
@@ -50,27 +53,27 @@ class DocumentCreator(tk.Tk):
         else:
             self.choosenOptions.append(task)
 
-
     def exitApp(self):
         exit()
-#    # generation of combined textfile
-#    def generate(self):
-#        print('generating file...')
-#        self.generateWord()
-#        with open('final.txt', 'w') as f:
-#            for op in self.choosenOptions:
-#                with open(filepath + op + '.txt', 'r') as r:
-#                    f.write(r.read()) 
+
+    #    # generation of combined textfile
+    #    def generate(self):
+    #        print('generating file...')
+    #        self.generateWord()
+    #        with open('final.txt', 'w') as f:
+    #            for op in self.choosenOptions:
+    #                with open(filepath + op + '.txt', 'r') as r:
+    #                    f.write(r.read())
 
     # generation of combined file as word
     def generateWord(self):
         document = Document()
-        document.add_heading('Example Document template')
+        document.add_heading("Example Document template")
         for op in self.choosenOptions:
-            with open(filepath + op + '.txt', 'r') as r:
-                p = document.add_paragraph('')
+            with open(filepath + op + ".txt", "r") as r:
+                p = document.add_paragraph("")
                 p.add_run(r.read())
-        document.save('final.docx')    
+        document.save("final.docx")
 
 
 # get all text-blocks in specified directory
@@ -80,9 +83,10 @@ def getOptions():
         exit()
     options = list()
     for option in os.listdir(filepath):
-        options.append(option.split('.')[0])
+        options.append(option.split(".")[0])
     return options
-        
-if __name__=="__main__":
+
+
+if __name__ == "__main__":
     documentcreator = DocumentCreator(getOptions())
     documentcreator.mainloop()

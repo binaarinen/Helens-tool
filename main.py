@@ -7,9 +7,9 @@ version 0
 """
 
 import sys
-import os.path
+import os
 import tkinter as tk
-from docx import Document
+import subprocess
 
 
 # global variable - defines where text-files are stored
@@ -63,15 +63,37 @@ class DocumentCreator(tk.Tk):
 
     def generate_word(self):
         """generation of combined file as word"""
-        document = Document()
-        document.add_heading("Example Document template")
+        header = """---
+title: Example Document template
+---
+        """
+        doc = header
         for option in self.choosen_options:
             with open(
                 os.path.join(TEXTS_PATH, option + ".txt"), encoding="utf-8"
             ) as stream:
-                paragraph = document.add_paragraph("")
-                paragraph.add_run(stream.read())
-        document.save("final.docx")
+                doc += "\n" + stream.read()
+        template_args = (
+            ("--reference-doc=template.docx",)
+            if os.path.exists("template.docx")
+            else ()
+        )
+        executable = "pandoc"
+
+        if os.name == "nt":
+            executable += ".exe"
+        subprocess.run(
+            (
+                executable,
+                "-o",
+                "final.docx",
+                "--from=markdown",
+                "-",
+            )
+            + template_args,
+            input=doc.encode(),
+            check=True,
+        )
 
 
 def get_options():
